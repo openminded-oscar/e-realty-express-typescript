@@ -1,5 +1,6 @@
-import express, { Request, Response } from "express";
+import express, { Response } from "express";
 import passport from "passport";
+import cors from "cors";
 import { initAuthStrategies } from "./auth/initStrategies";
 import { authUtils } from "./auth/utils";
 import cookieParser from "cookie-parser";
@@ -11,13 +12,17 @@ const app = express();
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 app.use(passport.initialize());
 
-app.get("/api/auth/google",
-    passport.authenticate("google", {
-        session: false,
-        scope: ["email", "profile"]
-    })
+app.get("/api/auth/google", (req,res,next) => {
+        passport.authenticate("google", {
+            session: false,
+            scope: ["email", "profile"],
+// TODO add 'state' if necessary here
+            state: ""
+        })(req, res, next);
+    }
 );
 
 app.get("/api/auth/google/callback",
@@ -25,16 +30,17 @@ app.get("/api/auth/google/callback",
         "google",
         {
             session: false,
-            failureRedirect: "/auth/failure",
+            failureRedirect: "/auth/failure"
         }
     ),
     (req, res: Response, next) => {
         const token: string = authUtils.generateUserToken(req, res);
-        res.cookie("jwt", token, {httpOnly:true, secure:true});
-        res.redirect("/api/protected?token="+token);
-        // FOR Angular TODO
-        // 1 embed token inside of html with template engine like Mustache
-        // OR 2 pass it by redirect with header
+        // This is html wrapper to be opened in separate window
+        let responseHTML = '<html><head><title>Main</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+        responseHTML = responseHTML.replace('%value%', JSON.stringify({
+            token: token
+        }));
+        res.status(200).send(responseHTML);
     },
 );
 
