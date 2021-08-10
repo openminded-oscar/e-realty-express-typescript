@@ -1,6 +1,8 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
 import { Strategy as JwtStrategy, StrategyOptions } from "passport-jwt";
+import { googleConfig } from "../config/googleConfig";
+import { jwt } from "../config/jwt";
 
 passport.serializeUser(function (user, done) {
   // TODO add saving
@@ -12,19 +14,17 @@ passport.deserializeUser(function (id, done) {
   done(null, { id: 1, displayName: "DummyUser" });
 });
 
-export const initAuth = {
+export const initAuthStrategies = {
   initJwt: () => {
     const opts: StrategyOptions = {
       jwtFromRequest: (req) => {
-        // TODO fix - read from bearer
         let token = null;
-        if (req && req.cookies) {
-          token = req.cookies["jwt"];
+        if (req.cookies) {
+          token = req.cookies.jwt;
         }
         return token;
       },
-      // TODO fix key
-      secretOrKey: "secretOrKey",
+      secretOrKey: jwt.key,
     };
 
     passport.use(
@@ -36,6 +36,8 @@ export const initAuth = {
         //     // user account doesnt exists in the DATA
         //     return done(null, false)
         // }
+          // TODO fix
+          return done(null, {name: 'iv', surname: 'lol'});
       })
     );
   },
@@ -44,14 +46,16 @@ export const initAuth = {
     passport.use(
       new GoogleStrategy(
         {
-          clientID: "",
-          clientSecret: "",
-          callbackURL: "http://localhost:3000/auth/google/callback",
+          clientID: googleConfig.clientID,
+          clientSecret: googleConfig.clientSecret,
+          callbackURL: "http://localhost:3000/api/auth/google/callback",
           passReqToCallback: true
         },
         (request: any, accessToken: string, refreshToken: string, profile: any, done: any) => {
-          // TODO check for user by profileId and create if missingƒ
+          // TODO check for user by profileId and create if missing
           console.log("After use");
+          request.accessField = accessToken;
+          request.refreshField = refreshToken;
           return done(null, profile);
         }
       )

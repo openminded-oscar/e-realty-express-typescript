@@ -1,46 +1,52 @@
 import express, { Request, Response } from "express";
 import passport from "passport";
-import { initAuth } from "./auth/init";
-import { authUtils } from "./auth/auth";
+import { initAuthStrategies } from "./auth/initStrategies";
+import { authUtils } from "./auth/utils";
+import cookieParser from "cookie-parser";
 
-initAuth.initGoogle();
-initAuth.initJwt();
+initAuthStrategies.initGoogle();
+initAuthStrategies.initJwt();
 
 const app = express();
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
-app.get("/auth/google",
+app.get("/api/auth/google",
     passport.authenticate("google", {
         session: false,
         scope: ["email", "profile"]
     })
 );
 
-app.get("/auth/google/callback",
-    (req, res, next) => {
-        authUtils.generateUserToken(req, res);
-        next();
-    },
+app.get("/api/auth/google/callback",
     passport.authenticate(
         "google",
         {
             session: false,
-            successRedirect: "/protected",
             failureRedirect: "/auth/failure",
         }
-    )
+    ),
+    (req, res: Response, next) => {
+        const token: string = authUtils.generateUserToken(req, res);
+        res.cookie("jwt", token, {httpOnly:true, secure:true});
+        res.redirect("/api/protected?token="+token);
+        // FOR Angular TODO
+        // 1 embed token inside of html with template engine like Mustache
+        // OR 2 pass it by redirect with header
+    },
 );
 
-app.get("/auth/failure", (req, res) => {
+app.get("/api/auth/failure", (req, res) => {
     res.send("Something went wrong!");
 });
 
-app.get("/protected", authUtils.isLoggedIn, (req, res) => {
+app.get("/api/protected", passport.authenticate("jwt", { session: false }), authUtils.isLoggedIn, (req, res) => {
+    res.send("SUCCESS!!!");
 });
 
-app.get("/logout", (req, res) => {
+app.get("/api/logout", (req, res) => {
     req.logOut();
     res.send("Goodbye!");
 });
