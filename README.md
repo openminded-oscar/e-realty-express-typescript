@@ -11,6 +11,7 @@ The next features are going to duplicate or improve java-based realperfect proje
 - authentication via Google using Oauth2.
 
 ##### Features planned:
+- moving config part to Strapi CMS
 - adding realty object review to end-user calendar;
 - plain (user/pass) auth;
 - realty objects gallery;

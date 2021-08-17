@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import http from 'http';
 import { Server, Socket } from 'socket.io';
 import { apiRouter } from "./routes";
+import mongoose from 'mongoose';
 
 initAuthStrategies.initGoogle();
 initAuthStrategies.initJwt();
@@ -23,15 +24,30 @@ app.use('/*', function(req, res){
     res.sendfile(__dirname + '/public/index.html');
 });
 
-// Init server here
-const ioServer = http.createServer(app);
-const io = new Server(ioServer);
-io.on('connection', client => {
-    client.on('event', data => {});
-    client.on('disconnect', () => {});
+// Init mongoose
+mongoose.connect("mongodb://localhost:27017/usersdb", { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false }, function(err){
+    if(err) return console.log(err);
+    startServer();
+    startSocketIOServer();
 });
-ioServer.listen(8081);
 
-app.listen(3000, () => {
-    console.log("Listening port 3000");
-});
+// Init SocketIOServer function
+const startSocketIOServer = () => {
+    const ioServer = http.createServer(app);
+    const io = new Server(ioServer);
+    io.on('connection', client => {
+        client.on('event', data => {
+        });
+        client.on('disconnect', () => {
+        });
+    });
+    ioServer.listen(8081);
+}
+
+// Init Express.js server function
+const startServer = () => {
+    app.listen(3000, () => {
+        console.log("Listening port 3000");
+    });
+}
+
