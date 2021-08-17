@@ -8,7 +8,14 @@ The next features are going to duplicate or improve java-based realperfect proje
 - passport.js
 
 ##### Features developed:
-- authentication via Google using Oauth2.
+- authentication via Google using Oauth2;
+- get object by id, post and findAll
+
+https://www.npmjs.com/package/api-query-params
+<!--
+https://stackoverflow.com/questions/54912739/how-to-generate-query-string-from-a-nested-object
+#https://stackoverflow.com/questions/34576659/nodejs-express-encodes-the-url-how-to-decode
+-->
 
 ##### Features planned:
 - moving config part to Strapi CMS

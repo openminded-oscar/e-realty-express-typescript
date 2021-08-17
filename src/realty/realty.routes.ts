@@ -1,7 +1,9 @@
 import { Router } from 'express';
-// import { FilterItem } from "../models/filterItem";
+import { Pageable } from "../models/common/pageble";
 import { realtyObjectsService } from "./realty.service";
 import { IRealtyObject } from "../models/realtyObject";
+
+import aqp from "api-query-params";
 
 export const apiRouter = Router();
 
@@ -13,23 +15,25 @@ apiRouter.get("/details/:objectId", async (req, res, next) => {
     }
 );
 
-// apiRouter.post("/realty-objects", (req, res, next) => {
-//     const filterItems: FilterItem[] = req.body;
-//     // const pageable;
-//
-//     let allObjects: Page<RealtyObject>;
-//     if (filterItems != null) {
-//         allObjects = realtyObjectsService.getAllObjectsForFilterItems(filterItems, pageable);
-//     } else {
-//         allObjects = realtyObjectsService.getAllObjects(pageable);
-//     }
-//
-//     res.send(allObjects);
-// );
+apiRouter.post("/", async (req, res, next) => {
+        // const skip, limit, sort, projection, population
+        const { filter } = aqp(req.body.query);
 
-apiRouter.post("/save", (req, res, next) => {
+        let allObjects: IRealtyObject[];
+        if (req.query) {
+            const pageable: Pageable = {page: Number(req.query.page), size: Number(req.query.size)};
+            allObjects = await realtyObjectsService.getAllObjects(filter, pageable);
+        } else {
+            allObjects = await realtyObjectsService.getAllObjects(filter);
+        }
+
+        res.send(allObjects);
+    }
+);
+
+apiRouter.post("/save", async (req, res, next) => {
     const realtyObject: IRealtyObject = req.body;
-    const addedObject: IRealtyObject = realtyObjectsService.add(realtyObject);
+    const addedObject: IRealtyObject = await realtyObjectsService.add(realtyObject);
 
     res.send(addedObject);
 });

@@ -1,4 +1,4 @@
-import express, { Response } from "express";
+import express  from "express";
 import passport from "passport";
 import cors from "cors";
 import { initAuthStrategies } from "./auth/initStrategies";

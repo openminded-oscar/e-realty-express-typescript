@@ -1,18 +1,24 @@
 import { RealtyObject } from "../models/realtyObject";
+import { Pageable } from "../models/common/pageble";
 
 export const realtyObjectsService = {
     getObjectById: async (id: number) => {
         return RealtyObject.findById(id)
             .exec();
     },
-    getAllObjectsForFilterItems: async () => {
-        return RealtyObject.find()
-            .exec();
+
+    getAllObjects: async (filter: any, pageable?: Pageable) => {
+        if (pageable) {
+            return RealtyObject.find(filter)
+                .skip(pageable.page * pageable.size)
+                .limit(pageable.size)
+                .exec();
+        } else {
+            return RealtyObject.find()
+                .exec();
+        }
     },
-    getAllObjects: async () => {
-        return RealtyObject.find()
-            .exec();
-    },
+
     add: async (object: any) => {
         return RealtyObject.create(object);
     },
