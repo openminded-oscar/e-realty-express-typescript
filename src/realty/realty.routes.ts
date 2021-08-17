@@ -5,7 +5,7 @@ import { IRealtyObject } from "../models/realtyObject";
 
 export const apiRouter = Router();
 
-apiRouter.get("/realty-objects/:objectId", async (req, res, next) => {
+apiRouter.get("/details/:objectId", async (req, res, next) => {
         const objectId: number = Number(req.params.objectId);
         const realtyObject = await realtyObjectsService.getObjectById(objectId);
 
@@ -27,20 +27,20 @@ apiRouter.get("/realty-objects/:objectId", async (req, res, next) => {
 //     res.send(allObjects);
 // );
 
-apiRouter.post("/realty-object/save", (req, res, next) => {
+apiRouter.post("/save", (req, res, next) => {
     const realtyObject: IRealtyObject = req.body;
     const addedObject: IRealtyObject = realtyObjectsService.add(realtyObject);
 
     res.send(addedObject);
 });
 
-apiRouter.get("/realty-objects/building-types", (req, res, next) => {
+apiRouter.get("/building-types", (req, res, next) => {
     const buildingTypes: string[] = realtyObjectsService.getRealtyBuildingTypes();
 
     res.send(buildingTypes);
 });
 
-apiRouter.get("/realty-objects/supported-operations", (req, res, next) => {
+apiRouter.get("/supported-operations", (req, res, next) => {
     const operationTypes: string[] = realtyObjectsService.getRealtyOperationTypes();
 
     res.send(operationTypes);

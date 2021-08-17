@@ -25,7 +25,7 @@ app.use('/*', function(req, res){
 });
 
 // Init mongoose
-mongoose.connect("mongodb://localhost:27017/usersdb", { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false }, function(err){
+mongoose.connect("mongodb://localhost:27017/realperfect", { useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false }, function(err){
     if(err) return console.log(err);
     startServer();
     startSocketIOServer();

@@ -1,8 +1,11 @@
 import { Response, Router } from 'express';
 import passport from "passport";
 import { authUtils } from "./auth/utils";
+import  { apiRouter as realtyRouter } from "./realty/realty.routes";
 
 export const apiRouter = Router();
+
+apiRouter.use('/realty-objects', realtyRouter);
 
 apiRouter.get("/auth/google", (req, res, next) => {
         passport.authenticate("google", {
