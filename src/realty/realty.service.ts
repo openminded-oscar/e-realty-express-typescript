@@ -3,6 +3,8 @@ import { Pageable } from "../models/common/pageble";
 import aqp from "api-query-params";
 import { FilterItem } from "../models/common/filterItem";
 
+const SUPPORTED_FIELDS = ['price', 'description'];
+
 function convertOperationAndArgument(operation: string, value: string) {
     let converted = '';
 
@@ -28,7 +30,7 @@ function convertOperationAndArgument(operation: string, value: string) {
 }
 
 function isSupported(field: string) {
-    return ['price', 'description'].indexOf(field.toLowerCase()) >= 0;
+    return SUPPORTED_FIELDS.indexOf(field.toLowerCase()) >= 0;
 }
 
 function convertFiltersToQueryString(filters: FilterItem[]) {

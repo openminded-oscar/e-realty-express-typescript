@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { RealtyObjectPhoto } from "./common/realtyObjectPhoto";
 
 // 1. Create an interface representing a document in MongoDB.
 export interface IRealtyObject {
@@ -9,23 +10,23 @@ export interface IRealtyObject {
     totalArea: Number;
     livingArea: Number;
     description: String;
-    // private Boolean hasGarage;
-    // private Boolean hasRepairing;
-    // private Boolean hasCellar;
-    // private Boolean hasLoft;
-    // private Integer foundationYear;
-    // private String otherInfo;
+    hasGarage: Boolean;
+    hasRepairing: Boolean;
+    hasCellar: Boolean;
+    hasLoft: Boolean;
+    foundationYear: Number;
+    otherInfo: String;
+    confirmed: Boolean;
+    realterAware: Boolean;
+
     // private BuildingType buildingType;
     // private DwellingType dwellingType;
     // private Set<OperationType> targetOperations;
-    // private Boolean confirmed = false;
-    // private Boolean realterAware = false;
-    //
     // private Address address;
     // private User owner;
     // private Realter realter;
     //
-    // private List<RealtyObjectPhoto> photos;
+    photos: RealtyObjectPhoto[];
     // private ConfirmationDocPhoto confirmationDocPhoto;
 }
 
@@ -37,7 +38,18 @@ const schema = new Schema<IRealtyObject>({
     price: Number,
     totalArea: Number,
     livingArea: Number,
-    description: String
+    description: String,
+
+    hasGarage: Boolean,
+    hasRepairing: Boolean,
+    hasCellar: Boolean,
+    hasLoft: Boolean,
+    foundationYear: Number,
+    otherInfo: String,
+    confirmed: Boolean,
+    realterAware: Boolean,
+
+    photos: Schema.Types.Mixed
 });
 
 // 3. Create a Model
