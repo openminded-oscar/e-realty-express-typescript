@@ -3,7 +3,7 @@ import { Pageable } from "../models/common/pageble";
 import { realtyObjectsService } from "./realty.service";
 import { IRealtyObject } from "../models/realtyObject";
 
-import aqp from "api-query-params";
+import { FilterItem } from "../models/common/filterItem";
 
 export const apiRouter = Router();
 
@@ -16,15 +16,14 @@ apiRouter.get("/details/:objectId", async (req, res, next) => {
 );
 
 apiRouter.post("/", async (req, res, next) => {
-        // const skip, limit, sort, projection, population
-        const { filter } = aqp(req.body.query);
+        const filters: FilterItem[] = req.body;
 
         let allObjects: IRealtyObject[];
         if (req.query) {
             const pageable: Pageable = {page: Number(req.query.page), size: Number(req.query.size)};
-            allObjects = await realtyObjectsService.getAllObjects(filter, pageable);
+            allObjects = await realtyObjectsService.getAllObjects(filters, pageable);
         } else {
-            allObjects = await realtyObjectsService.getAllObjects(filter);
+            allObjects = await realtyObjectsService.getAllObjects(filters);
         }
 
         res.send(allObjects);

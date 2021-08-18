@@ -1,5 +1,47 @@
 import { RealtyObject } from "../models/realtyObject";
 import { Pageable } from "../models/common/pageble";
+import aqp from "api-query-params";
+import { FilterItem } from "../models/common/filterItem";
+
+function convertOperationAndArgument(operation: string, value: string) {
+    let converted = '';
+
+    switch (operation.toLowerCase()) {
+        case "ge":
+            converted = ">=" + value;
+            break;
+        case "le":
+            converted = "<=" + value;
+            break;
+        case "eq":
+            converted = "=" + value;
+            break;
+        case "like":
+            converted = "=" + "/" + value + "/";
+            break;
+        case "operationtypecontains":
+            converted = "=" + value;
+            break;
+    }
+
+    return converted;
+}
+
+function isSupported(field: string) {
+    return ['price', 'description'].indexOf(field.toLowerCase()) >= 0;
+}
+
+function convertFiltersToQueryString(filters: FilterItem[]) {
+    let query = '';
+    for (const filter of filters) {
+        if (isSupported(filter.field)) {
+            query += filter.field + convertOperationAndArgument(filter.operation, filter.value) + '&';
+        }
+    }
+    query = query.substr(0, query.length - 1);
+
+    return query;
+}
 
 export const realtyObjectsService = {
     getObjectById: async (id: number) => {
@@ -7,14 +49,17 @@ export const realtyObjectsService = {
             .exec();
     },
 
-    getAllObjects: async (filter: any, pageable?: Pageable) => {
+    getAllObjects: async (filters: FilterItem[], pageable?: Pageable) => {
+        const queryString: string = convertFiltersToQueryString(filters);
+        const {filter} = aqp(queryString);
+
         if (pageable) {
             return RealtyObject.find(filter)
                 .skip(pageable.page * pageable.size)
                 .limit(pageable.size)
                 .exec();
         } else {
-            return RealtyObject.find()
+            return RealtyObject.find(filter)
                 .exec();
         }
     },

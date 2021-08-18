@@ -1,5 +1,5 @@
 export interface FilterItem {
     field: string;
-    value: string;
+    value: any;
     operation: string;
 }
